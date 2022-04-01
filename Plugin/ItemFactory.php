@@ -22,7 +22,7 @@ class ItemFactory
     }
 
     /**
-     * Inject thw add to cart url here
+     * Inject the add to cart url here
      *
      * @param \Smile\ElasticsuiteCatalog\Model\Autocomplete\Product\ItemFactory $subject
      * @param callable $proceed
