@@ -1,0 +1,50 @@
+<?php
+/**
+ * Hyvä Themes - https://hyva.io
+ * Copyright © Hyvä Themes 2020-present. All rights reserved.
+ * This product is licensed per Magento install
+ * See https://hyva.io/license
+ */
+
+declare(strict_types=1);
+
+use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\Theme\ViewModel\HeroiconsOutline;
+
+// phpcs:disable Generic.Files.LineLength.TooLong
+
+/** @var ViewModelRegistry $viewModels */
+/** @var Escaper $escaper */
+
+/** @var HeroiconsOutline $heroiconsOutline */
+$heroiconsOutline = $viewModels->require(HeroiconsOutline::class);
+
+?>
+
+<template x-if="searchResult.type == 'product_add_to_cart'">
+    <a class="w-full block" :href="searchResult.url" :title="searchResult.title">
+        <div class="grid grid-cols-5 gap-4 p-3">
+            <div class="col-span-1">
+                <img :src="searchResult.image" class="inline-block" />
+            </div>
+            <div class="col-span-2">
+                <span class="text-sm" x-text="searchResult.title"></span>
+                <span class="text-sm font-bold" x-html="searchResult.price"></span>
+            </div>
+            <div class="col-span-2 content-end items-end">
+                <form method="post"
+                      x-bind:action="searchResult.add_url">
+                    <?= /** @noEscape */ $block->getBlockHtml('formkey') ?>
+                    <button class="btn btn-primary"
+                            aria-label="<?= $escaper->escapeHtmlAttr(__('Add to Cart')) ?>"
+                    >
+                        <?= $heroiconsOutline->shoppingCartHtml("h-6 w-6 border-current inline", 25, 25) ?>
+                        <span class="product-addtocart-button ml-2 inline">
+                    <?= $escaper->escapeHtml(__('Add to Cart')) ?>
+                </span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </a>
+</template>

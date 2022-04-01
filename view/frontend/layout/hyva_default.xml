@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceBlock name="top.search" remove="true" />
+        <referenceBlock name="header-search" class="Smile\ElasticsuiteCore\Block\Search\Form\Autocomplete" >
+            <arguments>
+                <argument name="rendererList" xsi:type="array">
+                    <item name="product_add_to_cart" xsi:type="array">
+                        <item name="title" xsi:type="string" translate="true">Products</item>
+                        <item name="template" xsi:type="string">ProxiBlue_HyvaSmileAutocompleteAddToCart::catalog/autocomplete/product_add_to_cart.phtml</item>
+                    </item>
+                </argument>
+            </arguments>
+        </referenceBlock>
+    </body>
+</page>
