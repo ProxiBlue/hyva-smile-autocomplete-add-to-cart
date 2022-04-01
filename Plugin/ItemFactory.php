@@ -29,7 +29,7 @@ class ItemFactory
      * @param $data
      * @return mixed
      */
-    public function aroundCreate(\Smile\ElasticsuiteCatalog\Model\Autocomplete\Product\ItemFactory $subject, callable $proceed, $data)
+    public function beforeCreate(\Smile\ElasticsuiteCatalog\Model\Autocomplete\Product\ItemFactory $subject, $data)
     {
         if ($data['product']
             && $data['product']->isSaleable()
@@ -37,6 +37,7 @@ class ItemFactory
             $data['add_url'] = $this->cartHelper->getAddUrl($data['product'], ['useUencPlaceholder'=>true]);
             $data['type'] = 'product_add_to_cart';
         }
-        return $proceed($data);
+
+        return [$data];
     }
 }
