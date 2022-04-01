@@ -4,6 +4,9 @@
 
 Place an add to cart button on Autocomplete for saleable simple products
 
+![image](https://user-images.githubusercontent.com/4994260/161305333-7c9cf03e-c384-4d02-a94e-ab18327202fb.png)
+
+
 ## Requirements
 
 * Hyva Theme for Magento
@@ -20,6 +23,3 @@ Place an add to cart button on Autocomplete for saleable simple products
 ## Configuration
 
 None, once installed, button will be added to all simple products
-
-
-
