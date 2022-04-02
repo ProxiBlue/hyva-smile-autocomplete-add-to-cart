@@ -10,11 +10,14 @@ declare(strict_types=1);
 
 use Hyva\Theme\Model\ViewModelRegistry;
 use Hyva\Theme\ViewModel\HeroiconsOutline;
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
 
 // phpcs:disable Generic.Files.LineLength.TooLong
 
 /** @var ViewModelRegistry $viewModels */
 /** @var Escaper $escaper */
+/** @var Template $block */
 
 /** @var HeroiconsOutline $heroiconsOutline */
 $heroiconsOutline = $viewModels->require(HeroiconsOutline::class);
@@ -34,7 +37,7 @@ $heroiconsOutline = $viewModels->require(HeroiconsOutline::class);
             <div class="col-span-2 content-end items-end">
                 <form method="post"
                       x-bind:action="searchResult.add_url">
-                    <?= /** @noEscape */ $block->getBlockHtml('formkey') ?>
+                    <input name="form_key" type="hidden" x-bind:value="searchResult.formkey">
                     <button class="btn btn-primary"
                             aria-label="<?= $escaper->escapeHtmlAttr(__('Add to Cart')) ?>"
                     >
