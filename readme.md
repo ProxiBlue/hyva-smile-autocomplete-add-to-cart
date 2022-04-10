@@ -22,8 +22,8 @@ Place an add to cart button on Autocomplete for saleable simple products
 
 ## Configuration
 
-None, once installed, button will be added to all simple products
-Quantity will adhere to product configured min/max and qty step configuration.
+* None, once installed, button will be added to all simple products
+* Quantity will adhere to product configured min/max and qty step configuration.
 
 ## Donations
 
