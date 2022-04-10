@@ -22,8 +22,10 @@ Place an add to cart button on Autocomplete for saleable simple products
 
 ## Configuration
 
-* None, once installed, button will be added to all simple products
+* None, once installed, add to cart mini form will be added to all saleable simple products
 * Quantity will adhere to product configured min/max and qty step configuration.
+* Ads in a new render template for the add to cart rows, so existing product row renders are not affected. (ProxiBlue_HyvaSmileAutocompleteAddToCart::catalog/autocomplete/product_add_to_cart.phtml)
+
 
 ## Donations
 
