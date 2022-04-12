@@ -6,7 +6,7 @@ use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Checkout\Helper\Cart as CartHelper;
 use Magento\Framework\Data\Form\FormKey;
-use Magento\CatalogInventory\Api\Data\StockItemInterfaceFactory;
+use Magento\CatalogInventory\Api\StockRegistryInterface;
 use Psr\Log\LoggerInterface;
 
 // phpcs:disable Generic.Files.LineLength.TooLong
@@ -29,9 +29,11 @@ class ItemFactory
     protected $formKey;
 
     /**
-     * @var StockItemInterfaceFactory
+     * Although depricated, magento core is still using this: Magento\Catalog\Block\Product\AbstractProduct
+     *
+     * @var \Magento\CatalogInventory\Api\StockRegistryInterface
      */
-    private $stockItemInterfaceFactory;
+    protected $stockRegistry;
 
     /**
      * Cached stock data
@@ -54,13 +56,13 @@ class ItemFactory
     public function __construct(
         CartHelper          $cartHelper,
         FormKey             $formKey,
-        StockItemInterfaceFactory  $stockItemInterfaceFactory,
+        StockRegistryInterface $stockRegistry,
         LoggerInterface $logger
     )
     {
         $this->cartHelper = $cartHelper;
         $this->formKey = $formKey;
-        $this->stockItemInterfaceFactory = $stockItemInterfaceFactory;
+        $this->stockRegistry = $stockRegistry;
         $this->logger = $logger;
     }
 
@@ -109,7 +111,7 @@ class ItemFactory
     public function getStockItem(ProductInterface $product)
     {
         if (empty($this->stockItem)) {
-            $this->stockItem = $this->stockItemInterfaceFactory->create()->load($product->getId());
+            $this->stockItem = $this->stockRegistry->getStockItem($product->getId(), $product->getStore()->getWebsiteId());
         }
         return $this->stockItem;
     }
@@ -124,7 +126,7 @@ class ItemFactory
             return 1;
         }
         $min = $stockItem->getMinSaleQty();
-        return isset($min)
+        return !empty($min)
             ? ($stockItem->getIsQtyDecimal() ? (float)$min : (int)$min)
             : 1;
     }
@@ -140,7 +142,7 @@ class ItemFactory
             return 999999;
         }
         $max = $stockItem->getMaxSaleQty();
-        return isset($max)
+        return !empty($max)
             ? ($stockItem->getIsQtyDecimal() ? (float)$max : (int)$max)
             : 999999;
     }
