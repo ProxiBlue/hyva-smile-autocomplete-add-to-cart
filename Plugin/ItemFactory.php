@@ -6,7 +6,8 @@ use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Checkout\Helper\Cart as CartHelper;
 use Magento\Framework\Data\Form\FormKey;
-use Magento\CatalogInventory\Model\Stock\StockItemRepository;
+use Magento\CatalogInventory\Api\Data\StockItemInterfaceFactory;
+use Psr\Log\LoggerInterface;
 
 // phpcs:disable Generic.Files.LineLength.TooLong
 
@@ -28,9 +29,9 @@ class ItemFactory
     protected $formKey;
 
     /**
-     * @var StockItemRepository
+     * @var StockItemInterfaceFactory
      */
-    private $stockItemRepository;
+    private $stockItemInterfaceFactory;
 
     /**
      * Cached stock data
@@ -38,6 +39,11 @@ class ItemFactory
      * @var null
      */
     private $stockItem = null;
+
+    /**
+     * @var LoggerInterface
+     */
+    protected $logger;
 
     /**
      * Constructor
@@ -48,12 +54,14 @@ class ItemFactory
     public function __construct(
         CartHelper          $cartHelper,
         FormKey             $formKey,
-        StockItemRepository $stockItemRepository
+        StockItemInterfaceFactory  $stockItemInterfaceFactory,
+        LoggerInterface $logger
     )
     {
         $this->cartHelper = $cartHelper;
         $this->formKey = $formKey;
-        $this->stockItemRepository = $stockItemRepository;
+        $this->stockItemInterfaceFactory = $stockItemInterfaceFactory;
+        $this->logger = $logger;
     }
 
     /**
@@ -68,21 +76,26 @@ class ItemFactory
      */
     public function beforeCreate(\Smile\ElasticsuiteCatalog\Model\Autocomplete\Product\ItemFactory $subject, array $data)
     {
-        if ($data['product']
-            && $data['product']->isSaleable()
-            && $data['product']->getTypeId() == \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE
-        ) {
-            $data['qty_min'] = $this->getMinQty($data['product']);
-            $data['qty_max'] = $this->getMaxQty($data['product']);
-            $data['qty_increments_enabled'] = $this->areQtyIncrementsEnabled($data['product']);
-            $data['qty_increments'] = $this->getQtyIncrements($data['product']);
-            $data['qty_len'] = $this->getMaxQtyLength($data['product']);
-            $data['qty_step'] = $this->getQtyStep($data['product']);
-            $data['qty_format'] = $this->getQtyFormat($data['product']);
-            $data['add_url'] = $this->cartHelper->getAddUrl($data['product'], ['useUencPlaceholder' => true]);
-            $data['formkey'] = $this->formKey->getFormKey();
-            $data['type'] = 'product_add_to_cart';
-            $data['form_name'] = "ac_addtocart_" . $data['product']->getId();
+        try {
+            if ($data['product']
+                && $data['product']->isSaleable()
+                && $data['product']->getTypeId() == \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE
+            ) {
+                $this->stockItem = null;
+                $data['qty_min'] = $this->getMinQty($data['product']);
+                $data['qty_max'] = $this->getMaxQty($data['product']);
+                $data['qty_increments_enabled'] = $this->areQtyIncrementsEnabled($data['product']);
+                $data['qty_increments'] = $this->getQtyIncrements($data['product']);
+                $data['qty_len'] = $this->getMaxQtyLength($data['product']);
+                $data['qty_step'] = $this->getQtyStep($data['product']);
+                $data['qty_format'] = $this->getQtyFormat($data['product']);
+                $data['add_url'] = $this->cartHelper->getAddUrl($data['product'], ['useUencPlaceholder' => true]);
+                $data['formkey'] = $this->formKey->getFormKey();
+                $data['type'] = 'product_add_to_cart';
+                $data['form_name'] = "ac_addtocart_" . $data['product']->getId();
+            }
+        } catch (\Exception $e) {
+            $this->logger->debug($e->getMessage());
         }
 
         return [$data];
@@ -96,7 +109,7 @@ class ItemFactory
     public function getStockItem(ProductInterface $product)
     {
         if (empty($this->stockItem)) {
-            $this->stockItem = $this->stockItemRepository->get($product->getId());
+            $this->stockItem = $this->stockItemInterfaceFactory->create()->load($product->getId());
         }
         return $this->stockItem;
     }
