@@ -10,11 +10,8 @@ use Magento\Framework\Event\ObserverInterface;
 
 class RegisterModuleForHyvaConfig implements ObserverInterface
 {
-    private $componentRegistrar;
-
-    public function __construct(ComponentRegistrar $componentRegistrar)
+    public function __construct(private readonly ComponentRegistrar $componentRegistrar)
     {
-        $this->componentRegistrar = $componentRegistrar;
     }
 
     public function execute(Observer $event)
@@ -22,12 +19,12 @@ class RegisterModuleForHyvaConfig implements ObserverInterface
         $config = $event->getData('config');
         $extensions = $config->hasData('extensions') ? $config->getData('extensions') : [];
 
-        $moduleName = implode('_', array_slice(explode('\\', __CLASS__), 0, 2));
+        $moduleName = implode('_', array_slice(explode('\\', self::class), 0, 2));
 
         $path = $this->componentRegistrar->getPath(ComponentRegistrar::MODULE, $moduleName);
 
         // Only use the path relative to the Magento base dir
-        $extensions[] = ['src' => substr($path, strlen(BP) + 1)];
+        $extensions[] = ['src' => substr((string) $path, strlen(BP) + 1)];
 
         $config->setData('extensions', $extensions);
     }

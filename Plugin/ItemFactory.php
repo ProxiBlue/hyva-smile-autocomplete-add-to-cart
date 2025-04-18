@@ -165,7 +165,7 @@ class ItemFactory
         if (!($stockItem = $this->getStockItem($product))) {
             return 1;
         }
-        return $stockItem->getQtyIncrements() ? $stockItem->getQtyIncrements() : 1;
+        return $stockItem->getQtyIncrements() ?: 1;
     }
 
     /**
@@ -198,7 +198,7 @@ class ItemFactory
     public function getQtyStep(productInterface $product)
     {
         $qtyIncrements = $this->getQtyIncrements($product);
-        return $qtyIncrements ? $qtyIncrements : 1;
+        return $qtyIncrements ?: 1;
     }
 
     public function getQtyFormat(productInterface $product)
